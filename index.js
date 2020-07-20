@@ -13,6 +13,7 @@ app.use(bodyParser.json({ type: 'application/vnd.api+json' }));
 
 
 var authRoutes = require('./routes/auth');
+var subscriptionRoutes = require('./routes/subscriptions');
 
 
 
@@ -34,6 +35,7 @@ app.get("/",(req,res)=>{
   
 
 app.use("/auth",authRoutes);
+app.use("/subscriptions",subscriptionRoutes);
 
 
 
