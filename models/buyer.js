@@ -16,6 +16,9 @@ var buyer = new Schema({
     wallet: {
         type: Number, default: 100
     },
+    outstandingBill: {
+        type: Number, default: 0
+    },
     location: {
         lat: {
             type: Number, required: true

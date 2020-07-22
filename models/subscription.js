@@ -7,12 +7,11 @@ var subscription = new Schema({
         type: Schema.Types.ObjectId, ref: 'Buyers', required: true
     },
     details: {
-        name: {type: String, required:true},
+        name: {type: String, required: true},
         category: { type: String, required: true, enum: ["meats", "dairy", "vegetables", "fruits"] },
         quantity: { type: Number, required: true},
     },
-    type: {type: String, required: true, enum: ["daily", "weekly", "monthly"]},
-    lastDelivered: {type:Date},
+    deliveredToday: {type: Boolean, default: false},
     createdDate: { type: Date, default: Date.now }
 })
 

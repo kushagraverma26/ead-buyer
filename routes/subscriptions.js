@@ -1,27 +1,41 @@
 const express = require('express');
-const tokenToId = require("../helpers/tokenToId")
+const tokenToId = require("../helpers/tokenToId");
+const cron = require("node-cron"); 
 var subscriptions = require('../models/subscription');
 var buyers = require('../models/buyer');
 var router = express.Router()
 
+//For Flutter Application
+router.get("/allSubscriptions", (req,res)=>{
+  subscriptions.find(req.query).then((subscriptions)=>{
+    res.send(subscriptions)
+  }).catch((err)=>{
+    res.status(400).send("Bad Request")
+  })
+})
 
 
-router.get("/",buyerValidate,(req,res)=>{
+
+//For React Application
+router.get("/mySubscriptions",buyerValidate,(req,res)=>{
+  tokenToId(req.get("token")).then((id) => {
+    req.query['createdBy'] = id
     subscriptions.find(req.query).then((subscriptions)=>{
       res.send(subscriptions)
     }).catch((err)=>{
       res.status(400).send("Bad Request")
     })
+  }).catch((err) =>{
+    res.status(400).send("Bad Request")
+  })
 })
   
-
 
 router.post("/", buyerValidate, (req, res) => {
     var subscription = new subscriptions({
       name: req.body.name,
       createdBy: req.body.userId,
       details: req.body.details,
-      type: req.body.type
     })
     subscription.save((err, newSubscription) => {
       if (err) res.status(409).send(err)
@@ -31,6 +45,26 @@ router.post("/", buyerValidate, (req, res) => {
     })
 })
   
+//confirm delivery and update bill
+router.post("/delivered", (req,res) => {
+  subscriptions.findByIdAndUpdate(req.query.id, {$set: {deliveredToday : true}}, {new:true}, function(err1,updatedSubscription) {
+    if(err1){
+      res.status(500).send("DB error")
+    }
+    else{
+      buyers.findByIdAndUpdate(req.body.createdBy, {$inc : {'outstandingBill' : req.body.amount}}, {new:true}, function(err2,buyer){
+        if(err2){
+          res.status(500).send("DB error")
+        }
+        else{
+          res.send([{"outstandingBill": buyer.outstandingBill, "updatedSubscription": updatedSubscription.name}])
+        }
+      })
+    }
+  })
+})
+
+
 
 router.delete("/:id", buyerValidate, (req, res) => {
     var id = req.params.id;
@@ -41,6 +75,24 @@ router.delete("/:id", buyerValidate, (req, res) => {
     })
 })
   
+
+
+cron.schedule("0 0 * * *", async function() { 
+  console.log("running a task every midnight");
+  var allSubscriptions = await subscriptions.find({});
+  console.log(allSubscriptions);
+  for(i = 0; i<allSubscriptions.length; i++) {
+    console.log(allSubscriptions[i]['name']);
+    subscriptions.findByIdAndUpdate(allSubscriptions[i]['_id'], {$set: {deliveredToday : false}}, {new:true}, function(err,subscription){
+      if(err){
+        console.log("DB error");
+      }
+      else{
+        console.log(subscription);
+      }
+    })
+  }
+}); 
 
 
 
@@ -58,7 +110,5 @@ function buyerValidate(req, res, next) {
   
 }
   
-  
-
 
 module.exports = router;

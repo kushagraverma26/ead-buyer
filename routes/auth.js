@@ -36,7 +36,7 @@ router.post("/buyerLogin", (req, res) => {
       else {
         if (bcrypt.compareSync(req.body.password, buyer.password)) {
           var token = jwt.sign({ id: buyer._id }, config.secret, { expiresIn: 86400 });
-          res.send({ "token": token })
+          res.send([{"id": buyer._id, "firstName" : buyer.firstName, "outstandingBill": buyer.outstandingBill}, { "token": token }])
         }
         else res.status(403).send("Auth Error")
       }

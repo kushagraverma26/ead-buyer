@@ -1,5 +1,6 @@
 const express = require('express');
 var mongoose = require('mongoose');
+const cron = require("node-cron"); 
 bodyParser = require('body-parser');
 const app = express();
 const port = 3002;
@@ -14,6 +15,7 @@ app.use(bodyParser.json({ type: 'application/vnd.api+json' }));
 
 var authRoutes = require('./routes/auth');
 var subscriptionRoutes = require('./routes/subscriptions');
+var buyerRoutes = require('./routes/buyers');
 
 
 
@@ -36,7 +38,7 @@ app.get("/",(req,res)=>{
 
 app.use("/auth",authRoutes);
 app.use("/subscriptions",subscriptionRoutes);
-
+app.use("/buyers",buyerRoutes)
 
 
 
@@ -49,5 +51,8 @@ db.once('open', function() {
   app.listen(port, () => console.log(` app listening on port ${port}!`))
 
 });
+
+
+
 
 module.exports = app
