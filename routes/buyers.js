@@ -4,6 +4,17 @@ var buyers = require('../models/buyer');
 var router = express.Router()
 
 
+//For Flutter Application
+router.get("/buyerDetails", (req,res)=>{
+    buyers.find(req.query).then((buyer)=>{
+      res.send(buyer)
+    }).catch((err)=>{
+      res.status(400).send("Bad Request")
+    })
+})
+
+
+
 router.get("/myProfile", buyerValidate, (req, res) => {
     tokenToId(req.get("token")).then((id) => {
         req.query['_id'] = id
@@ -16,6 +27,8 @@ router.get("/myProfile", buyerValidate, (req, res) => {
         res.status(400).send("Bad Request")
     })
 })
+
+
 
 //Pay Bill
 //Use after recording payment

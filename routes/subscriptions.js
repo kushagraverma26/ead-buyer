@@ -45,16 +45,17 @@ router.post("/", buyerValidate, (req, res) => {
     })
 })
   
-//confirm delivery and update bill
+//confirm delivery and update bill from flutter application
 router.post("/delivered", (req,res) => {
-  subscriptions.findByIdAndUpdate(req.query.id, {$set: {deliveredToday : true}}, {new:true}, function(err1,updatedSubscription) {
+  subscriptions.findByIdAndUpdate(req.body.id, {$set: {deliveredToday : true}}, {new:true}, function(err1,updatedSubscription) {
     if(err1){
-      res.status(500).send("DB error")
+      res.status(500).send("DB error in updating")
     }
     else{
       buyers.findByIdAndUpdate(req.body.createdBy, {$inc : {'outstandingBill' : req.body.amount}}, {new:true}, function(err2,buyer){
         if(err2){
-          res.status(500).send("DB error")
+          console.log(err2);
+          res.status(500).send("DB error in billing")
         }
         else{
           res.send([{"outstandingBill": buyer.outstandingBill, "updatedSubscription": updatedSubscription.name}])
