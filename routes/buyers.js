@@ -5,16 +5,17 @@ var router = express.Router()
 
 
 //For Flutter Application
-router.get("/buyerDetails", (req,res)=>{
-    buyers.find(req.query).then((buyer)=>{
-      res.send(buyer)
-    }).catch((err)=>{
-      res.status(400).send("Bad Request")
+//GET details of the buyer
+router.get("/buyerDetails", (req, res) => {
+    buyers.find(req.query).then((buyer) => {
+        res.send(buyer)
+    }).catch((err) => {
+        res.status(400).send("Bad Request")
     })
 })
 
 
-
+// Get profile of the buyer for react app
 router.get("/myProfile", buyerValidate, (req, res) => {
     tokenToId(req.get("token")).then((id) => {
         req.query['_id'] = id
@@ -47,6 +48,8 @@ router.post("/payBill", buyerValidate, (req, res) => {
     })
 })
 
+
+// Token Validator
 function buyerValidate(req, res, next) {
     tokenToId(req.get("token")).then((id) => {
         req.body.userId = id;

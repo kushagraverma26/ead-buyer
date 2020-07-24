@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
+//Schema for buyer
 var buyer = new Schema({
     email: {
         type: String,
@@ -12,9 +13,6 @@ var buyer = new Schema({
     lastName: { type: String, required: true },
     phone: {
         type: Number, required: true
-    },
-    wallet: {
-        type: Number, default: 100
     },
     outstandingBill: {
         type: Number, default: 0
@@ -39,4 +37,4 @@ var buyer = new Schema({
 
 })
 
-module.exports = mongoose.model('Buyers',buyer)
+module.exports = mongoose.model('Buyers', buyer)
