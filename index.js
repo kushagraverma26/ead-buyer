@@ -1,6 +1,7 @@
 const express = require('express');
 var mongoose = require('mongoose');
 bodyParser = require('body-parser');
+const cors = require("cors");
 const app = express();
 const port = 3002;//PORT Number
 
@@ -9,6 +10,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.text());
 app.use(bodyParser.json({ type: 'application/vnd.api+json' }));
+app.use(cors());
+
 
 //Routes
 var authRoutes = require('./routes/auth');
